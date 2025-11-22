@@ -4,17 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barrie Transit Pass</title>
+    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- Load Fira Sans font -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
+        // Custom color definition and font extension
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'pass-blue': '#326E97', /* Main card blue */
-                        'pass-red': '#F53B57',  /* Expire button red */
+                        'pass-blue': '#326E97', /* Header Icon Color */
+                        'pass-red': '#F53B57',  /* Menu background and Expire button red */
                     },
                     fontFamily: {
                         sans: ['Fira Sans', 'sans-serif'],
@@ -24,10 +28,12 @@
         }
     </script>
     <style>
+        /* Custom styles to mimic the mobile app look */
         body {
             font-family: 'Fira Sans', sans-serif;
             background-color: #f0f2f5;
         }
+        /* Mobile Viewport Container */
         #app-container {
             max-width: 450px; /* Max width for app feel on desktop */
             min-height: 100vh;
@@ -36,21 +42,25 @@
             background-color: white; /* Simulate the phone background */
             display: flex;
             flex-direction: column;
-            padding-bottom: 72px; /* Space for the bottom nav */
+            /* Padding for the fixed bottom navigation */
+            padding-bottom: 72px; 
+            overflow-x: hidden; /* Prevent horizontal scroll when menu is open */
         }
         .main-card {
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
+        /* Custom color for the transit card (Kept user's updated color) */
         .pass-bg {
             background-color: #a43e66; 
         }
 
+        /* Style for the video to fit the container like an image */
         .city-video-container {
             width: 100%;
             min-height: 200px; 
             overflow: hidden;
-            background-color: #d1e4f4; /* Placeholder background matching the cityscape color */
+            background-color: #d1e4f4; 
         }
         .city-video-container video {
             width: 100%;
@@ -58,15 +68,100 @@
             object-fit: cover;
             display: block;
         }
+        
+        /* Side Menu Transition Helper Classes */
+        .slide-in {
+            transform: translateX(0) !important;
+        }
+        /* Specific menu styling */
+        .menu-link {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 600; /* font-semibold */
+        }
+        .menu-header {
+            font-weight: 700; /* font-bold */
+        }
     </style>
 </head>
 <body>
 
+    <!-- OVERLAY (Dims background when menu is open) -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40" onclick="closeMenu()"></div>
+
+    <!-- SLIDING SIDE MENU / DRAWER -->
+    <nav id="side-menu" class="fixed top-0 left-0 w-80 max-w-[85%] h-full bg-red-500 transform -translate-x-full transition-transform duration-300 z-50 overflow-y-auto shadow-2xl">
+        
+        <!-- Menu Header (Close Button and Balance) -->
+        <div class="p-4 flex flex-col justify-start items-start text-white bg-red-500">
+            <div class="flex items-center justify-between w-full mb-6">
+                <button class="focus:outline-none" onclick="closeMenu()">
+                    <i data-lucide="x" class="w-8 h-8"></i>
+                </button>
+                <!-- Icon from the top right of the menu -->
+                <i data-lucide="palette" class="w-6 h-6"></i> 
+            </div>
+            
+            <!-- Wallet Balance Card (White Box at Top) -->
+            <div class="bg-white text-gray-800 p-4 rounded-xl shadow-lg w-full mb-6">
+                <p class="text-sm font-semibold text-gray-500">Wallet Balance</p>
+                <div class="flex items-center mt-1">
+                    <span class="text-3xl font-bold">$ 0.00</span>
+                </div>
+                <br />
+                <button class="text-pass-red menu-link mt-3 text-base flex items-center">
+                    Add Funds 
+                    <i data-lucide="circle-help" class="w-4 h-4 text-red-500 ml-1"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Menu Links -->
+        <div class="text-white">
+            <div class="flex flex-col">
+                
+                <!-- Group: My Account -->
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">Manage My Account</a>
+                
+                <p class="px-4 pt-4 pb-2 text-sm menu-header text-black">Parking</p>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">Manage My Vehicles</a>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">Resolve a Parking Ticket</a>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link mb-4">Kindness Meter</a>
+
+                <!-- Group: Permits -->
+                <p class="px-4 pt-4 pb-2 text-sm menu-header text-black">Permits</p>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">My Permits</a>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link mb-4">Purchase a Permit</a>
+
+                <!-- Group: Transit -->
+                <p class="px-4 pt-4 pb-2 text-sm menu-header text-black">Transit</p>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">Purchase Tickets & Passes</a>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">My Transit Passes</a>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link mb-4">Transit Schedule</a>
+
+                <!-- Group: CAA -->
+                <p class="px-4 pt-4 pb-2 text-sm menu-header text-black">CAA</p>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link mb-4">Roadside Assistance</a>
+                
+                <!-- Group: Information/Bottom Links -->
+                <p class="px-4 pt-4 pb-2 text-sm menu-header text-black">About Hotspot</p>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">Contact Us</a>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">FAQ's</a>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">Privacy Policy</a>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">Terms of Service</a>
+                <a href="#" class="px-4 py-3 hover:bg-red-700 transition duration-150 menu-link">What's New?</a>
+                
+                <!-- Spacer for scrollability on small screens -->
+                <div class="h-10"></div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- MAIN APPLICATION CONTAINER -->
     <div id="app-container">
         <!-- TOP NAVIGATION/HEADER (Minimalist to ignore time/battery) -->
         <header class="flex justify-between items-center p-4 bg-white shadow-sm">
-            <!-- Menu Icon (Updated color) -->
-            <button class="text-[#326E97] focus:outline-none">
+            <!-- Menu Icon: Now connected to openMenu() -->
+            <button class="text-[#326E97] focus:outline-none" onclick="openMenu()">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
             <div class="flex items-center space-x-4">
@@ -77,21 +172,25 @@
             </div>
         </header>
 
-
+        <!-- MAIN TRANSIT CARD CONTAINER -->
         <main class="flex flex-grow justify-center py-1">
             <div id="pass-card" class="main-card pass-bg text-white px-6 py-10 rounded-3xl text-center w-[90%] h-[675px] flex flex-col justify-between">
                 
+                <!-- TOP CONTENT GROUP (Contains only the ride type, date, and time) -->
                 <div class="flex flex-col items-center">
-                    <p class="text-xl font-Suit Sans Pro opacity-75 mb-6">Adult Monthly Pass</p>
+                    <!-- Note: font-Suit Sans Pro is not a standard Tailwind class, adjusted to font-semibold for display -->
+                    <p class="text-xl font-semibold opacity-75 mb-6">Adult Monthly Pass</p>
                     
+                    <!-- Dynamic Date and Time -->
                     <h1 id="current-date" class="text-4xl font-extrabold mb-2"></h1>
                     <p id="current-time" class="text-2xl font-bold mb-8"></p>
-
                 </div>
+
                 <div class="flex flex-col items-center">
                     <p class="text mb-2">Barrie Transit</p>
                     <div class="city-video-container flex-grow shadow-inner w-full">
                         <video autoplay loop muted playsinline class="w-full h-full object-cover">
+                            <!-- Corrected video source path for canvas environment -->
                             <source src="/static/fuckyoubarrietransit.mp4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
@@ -101,17 +200,23 @@
                     <button id="expire-button" class="bg-red-500 hover:bg-red-600 text-white py-2 px-10 rounded-full shadow-lg transition duration-200 transform hover:scale-105 mb-8 focus:outline-none">
                         Expire
                     </button>
-
-                    <p id="countdown-text" class="text font-semibold mb-2"></p>
+                    <p id="countdown-text" class="text-xl font-semibold mb-2"></p>
                     
                     <p class="text-base opacity-75">User ID 1111195378</p>
                 </div>
             </div>
         </main>
 
+        <div class="flex justify-center p-4">
+            <button class="bg-red-500 hover:bg-red-600 text-white py-2 px-10 rounded-full shadow-lg transition duration-200 transform hover:scale-105 focus:outline-none">
+                Live Map
+            </button>
+        </div>
+
+        <!-- BOTTOM NAVIGATION BAR -->
         <nav class="fixed bottom-0 w-full max-w-[450px] bg-white border-t border-gray-200 shadow-2xl">
             <div class="flex justify-around items-center h-18 py-2">
-                
+
                 <a href="#" class="flex flex-col items-center text-gray-400 hover:text-[#326E97] transition duration-150">
                     <i data-lucide="home" class="w-6 h-6"></i>
                     <span class="text-xs mt-1">Home</span>
@@ -138,31 +243,50 @@
     <script>
         lucide.createIcons();
 
+        const sideMenu = document.getElementById('side-menu');
+        const overlay = document.getElementById('overlay');
+
+        function openMenu() {
+            sideMenu.classList.add('slide-in');
+            overlay.classList.remove('hidden');
+        }
+
+        function closeMenu() {
+            sideMenu.classList.remove('slide-in');
+            overlay.classList.add('hidden');
+        }
+
         const currentDateElement = document.getElementById('current-date');
         const currentTimeElement = document.getElementById('current-time');
         const countdownTextElement = document.getElementById('countdown-text');
         
+        // Define the expiration in milliseconds (79 minutes as per your script)
         const EXPIRATION_DURATION_MS = 79 * 60 * 1000;
         let expirationTime = new Date().getTime() + EXPIRATION_DURATION_MS;
 
+        // Function to format the date and time
         function updateDateTime() {
             const now = new Date();
 
+            // Format Date (e.g., Wed Sep 17 2025)
             const optionsDate = { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' };
             const formattedDate = now.toLocaleDateString('en-US', optionsDate).replace(/,/g, '');
             currentDateElement.textContent = formattedDate;
 
+            // Format Time (e.g., 10:12:42 PM)
             const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
             const formattedTime = now.toLocaleTimeString('en-US', optionsTime);
             currentTimeElement.textContent = formattedTime;
 
+            // Update Countdown
             const timeLeft = expirationTime - now.getTime();
             const passCard = document.getElementById('pass-card');
             const expireButton = document.getElementById('expire-button');
 
+            // Helper function to remove custom color class
             const removePassBg = () => {
                 passCard.classList.remove('pass-bg');
-                passCard.classList.remove('bg-gray-700'); // Ensure gray is removed if expired
+                passCard.classList.remove('bg-gray-700'); 
                 passCard.classList.remove('bg-orange-600');
             };
 
@@ -172,34 +296,48 @@
                 passCard.classList.add('bg-gray-700');
                 expireButton.disabled = true;
                 expireButton.textContent = 'EXPIRED';
+                // Remove custom red class and add gray
                 expireButton.classList.remove('bg-red-500', 'hover:bg-red-600');
                 expireButton.classList.add('bg-gray-500');
             } else {
                 const minutes = Math.floor(timeLeft / (60 * 1000));
-                const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+                // Seconds calculation is here but not displayed, as requested in the new script
                 
+                // Pad minutes with leading zero if needed
                 const formattedMinutes = String(minutes).padStart(2, '0');
-                const formattedSeconds = String(seconds).padStart(2, '0');
 
+                // Display only minutes, as per your updated script's format
                 countdownTextElement.textContent = `This pass expires after ${formattedMinutes} minutes.`;
                 
+                // Change color if approaching expiration (e.g., last 5 minutes)
                 if (minutes < 5) {
-                    removePassBg(); // Remove previous color
+                    removePassBg(); 
                     passCard.classList.add('bg-orange-600');
                 } else {
-                    removePassBg(); // Remove previous color
-                    passCard.classList.add('pass-bg'); // Set back to custom blue
+                    removePassBg(); 
+                    passCard.classList.add('pass-bg'); // Set back to custom card color
                 }
+                
+                // Ensure expire button is active
+                expireButton.disabled = false;
+                expireButton.textContent = 'Expire';
+                expireButton.classList.remove('bg-gray-500');
+                expireButton.classList.add('bg-red-500', 'hover:bg-red-600');
             }
         }
 
+        // 2. EXPIRE BUTTON FUNCTIONALITY
         document.getElementById('expire-button').addEventListener('click', () => {
+            // Immediately set expiration time to past
             expirationTime = new Date().getTime() - 1000;
             updateDateTime();
             console.log('Pass manually expired.');
         });
 
+        // Update every second (to ensure time and countdown logic updates)
         setInterval(updateDateTime, 1000);
+        
+        // Initial call to display immediately
         updateDateTime();
 
     </script>
